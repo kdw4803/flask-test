@@ -1,0 +1,19 @@
+version: 0.2
+ 
+phases:
+    pre_build:
+        commands:
+        - echo "Logging in to Amazon ECR"
+        - $(aws ecr get-login --no-include-email --region ap-northeast-2)
+    build:
+        commands:
+        - echo "Testing Flask App"
+        - pip install -r requirements.txt
+        // - python test.py
+        - echo "Building the Docker image"
+        - docker build -t flask-test .
+        - docker tag flask-test:latest 331555003056.dkr.ecr.ap-northeast-2.amazonaws.com/flask-test:latest
+    post_build:
+        commands:
+        - echo "Pushing the docker image"
+        - docker push 331555003056.dkr.ecr.ap-northeast-2.amazonaws.com/flask-test:latest
