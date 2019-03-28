@@ -10,7 +10,7 @@ def hello():
     return "Hello World!"
 
 @app.route("/damon")
-def index():
+def damon():
     return "Damon!"
 
 @app.route("/members")
