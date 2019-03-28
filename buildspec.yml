@@ -1,22 +1,50 @@
 version: 0.2
- 
+
 phases:
-    install:
-        commands:
-            - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
-            - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
     pre_build:
         commands:
-            - echo "Logging in to Amazon ECR"
-            - $(aws ecr get-login --no-include-email --region ap-northeast-2)
+            - echo Logging in to Amazon ECR...
+            - aws --version
+            - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+            - REPOSITORY_URI=331555003056.dkr.ecr.ap-northeast-2.amazonaws.com/flask-test
+            - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+            - IMAGE_TAG=${COMMIT_HASH:=latest}
     build:
         commands:
-            - echo "Testing Flask App"
-            - pip install -r requirements.txt
-            - echo "Building the Docker image"
-            - docker build -t flask-test .
-            - docker tag flask-test:latest 331555003056.dkr.ecr.ap-northeast-2.amazonaws.com/flask-test:latest
+            - echo Build started on `date`
+            - echo Building the Docker image...          
+            - docker build -t $REPOSITORY_URI:latest .
+            - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
     post_build:
         commands:
-            - echo "Pushing the docker image"
-            - docker push 331555003056.dkr.ecr.ap-northeast-2.amazonaws.com/flask-test:latest
+            - echo Build completed on `date`
+            - echo Pushing the Docker images...
+            - docker push $REPOSITORY_URI:latest
+            - docker push $REPOSITORY_URI:$IMAGE_TAG
+            - echo Writing image definitions file...
+            - printf '[{"name":"flask-test","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+    artifacts:
+        files: imagedefinitions.json
+
+# version: 0.2
+ 
+# phases:
+#     install:
+#         commands:
+#             - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
+#             - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
+#     pre_build:
+#         commands:
+#             - echo "Logging in to Amazon ECR"
+#             - $(aws ecr get-login --no-include-email --region ap-northeast-2)
+#     build:
+#         commands:
+#             - echo "Testing Flask App"
+#             - pip install -r requirements.txt
+#             - echo "Building the Docker image"
+#             - docker build -t flask-test .
+#             - docker tag flask-test:latest 331555003056.dkr.ecr.ap-northeast-2.amazonaws.com/flask-test:latest
+#     post_build:
+#         commands:
+#             - echo "Pushing the docker image"
+#             - docker push 331555003056.dkr.ecr.ap-northeast-2.amazonaws.com/flask-test:latest
