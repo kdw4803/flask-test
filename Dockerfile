@@ -8,7 +8,9 @@ WORKDIR /app
 
 ADD . /app
 
-RUN apt-get update && apt-get install -y default-libmysqlclient-dev
+RUN apt-get -y update && apt-get install -y libzbar-dev
+
+RUN apt-get install -y default-libmysqlclient-dev
 
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
