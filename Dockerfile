@@ -18,7 +18,9 @@ EXPOSE 80
 
 ARG ENVIROMENT=dev
 ENV ENVIROMENT=${ENVIROMENT}
-RUN echo ${ENVIROMENT}
+
+ARG DATABASE_URI
+ENV DATABASE_URI=${DATABASE_URI}
 
 # CMD ["python", "app.py"]
-CMD python app.py --env=${ENVIROMENT}
+CMD python app.py --env=${ENVIROMENT} --db=${DATABASE_URI}
