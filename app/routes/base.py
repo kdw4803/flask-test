@@ -1,7 +1,7 @@
 def init_app(app):
     @app.route("/")
     def index():
-        return "Index!!"
+        return app.config['ENV']
 
     @app.route("/hello")
     def hello():

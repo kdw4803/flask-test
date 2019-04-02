@@ -16,6 +16,4 @@ def init_app(app):
             member.online = '1'
 
         db.session.commit()
-        return jsonify(
-            result=member.online
-        )
+        return jsonify(member.as_dict())
