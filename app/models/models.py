@@ -59,3 +59,43 @@ class Member(db.Model):
 
     def as_dict(self):
         return {x.name: getattr(self, x.name) for x in self.__table__.columns}
+
+class Order(db.Model):
+    __tablename__ = 'orders'
+    __table_args__ = (
+        db.Index('buyer_USERID', 'buyer_USERID', 'status'),
+        db.Index('type_id_2', 'type_id', 'status'),
+        db.Index('seller_USERID_2', 'seller_USERID', 'status'),
+        db.Index('type_2', 'type', 'type_id'),
+        db.Index('PID_2', 'PID', 'status')
+    )
+
+    OID = db.Column(db.BigInteger, primary_key=True)
+    DOID = db.Column(db.BigInteger, index=True, server_default=db.FetchedValue())
+    buyer_USERID = db.Column(db.BigInteger, index=True)
+    seller_USERID = db.Column(db.BigInteger, index=True)
+    type = db.Column(ENUM('GIG', 'GIG_REQUEST', 'INBOX_REQUEST', 'CUSTOM_QUOTE', 'CALLING'), nullable=False, index=True, server_default=db.FetchedValue())
+    type_id = db.Column(db.BigInteger, index=True)
+    # PLID = db.Column(db.ForeignKey('posts_log.PLID'), index=True)
+    package_id = db.Column(db.BigInteger, index=True)
+    PID = db.Column(db.BigInteger, nullable=False, index=True, server_default=db.FetchedValue())
+    status = db.Column(ENUM('READYORDER', 'ONGOING', 'TROUBLESHOOTING', 'DELIVERED', 'COMPLETED', 'CANCELEDBYBUYER', 'CANCELEDBYSELLER'), nullable=False, index=True, server_default=db.FetchedValue())
+    total_price = db.Column(db.BigInteger)
+    price = db.Column(db.BigInteger, nullable=False, server_default=db.FetchedValue())
+    total_days = db.Column(db.BigInteger)
+    extra_data = db.Column(db.Text)
+    quantity = db.Column(db.Integer, server_default=db.FetchedValue())
+    days = db.Column(db.BigInteger)
+    agreed = db.Column(db.Integer, server_default=db.FetchedValue())
+    isDirect = db.Column(db.Integer, server_default=db.FetchedValue())
+    created_at = db.Column(db.DateTime, index=True, server_default=db.FetchedValue())
+    updated_at = db.Column(db.DateTime, server_default=db.FetchedValue())
+    started_at = db.Column(db.DateTime, index=True)
+    expected_completed_at = db.Column(db.DateTime)
+    delivered_at = db.Column(db.DateTime, index=True)
+    completed_at = db.Column(db.DateTime, index=True)
+
+    # posts_log = db.relationship('PostsLog', primaryjoin='Order.PLID == PostsLog.PLID', backref='orders')
+
+    def as_dict(self):
+        return {x.name: getattr(self, x.name) for x in self.__table__.columns}

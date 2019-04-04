@@ -2,10 +2,10 @@ from flask import Flask
 from . import models, routes
 from .config import config_by_name
 
-def create_app(config_name, db):
+def create_app(args):
     app = Flask(__name__)
-    app.config.from_object(config_by_name[config_name])
-    app.config['SQLALCHEMY_DATABASE_URI'] = db
+    app.config.from_object(config_by_name[args.env or 'dev'])
+    app.config['SQLALCHEMY_DATABASE_URI'] = args.db
     models.init_app(app)
     routes.init_app(app)
     return app
