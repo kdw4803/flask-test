@@ -5,7 +5,7 @@ from .config import config_by_name
 def create_app(args):
     app = Flask(__name__)
     app.config.from_object(config_by_name[args.env or 'dev'])
-    if 'SQLALCHEMY_DATABASE_URI' not in app.config:
+    if args.db != None:
         app.config['SQLALCHEMY_DATABASE_URI'] = args.db
     models.init_app(app)
     routes.init_app(app)

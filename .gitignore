@@ -1,4 +1,4 @@
 .vscode/*
 *.pyc
 base_models.py
-.env
+database.py
