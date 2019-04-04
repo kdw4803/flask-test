@@ -17,7 +17,7 @@ def init_app(app):
         db.session.add(order)
         db.session.commit()
 
-        return jsonify(order.as_dict)
+        return jsonify(order.as_dict())
 
     @app.route("/orders/<int:OID>/", methods=['PUT'])
     def updateOrder(OID):
@@ -29,4 +29,4 @@ def init_app(app):
             order.status = 'ONGOING'
 
         db.session.commit()
-        return order.OID
+        return jsonify(order.as_dict())
