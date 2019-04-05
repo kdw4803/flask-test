@@ -10,6 +10,7 @@ class Config:
 class DevelopmentConfig(Config):
 	DEBUG = True
 	SQLALCHEMY_TRACK_MODIFICATIONS = False
+	SQLALCHEMY_DATABASE_URI = 'mysql://root:Asdf1205@127.0.0.1:3306/billing'
 	ENV = 'development'
 
 
